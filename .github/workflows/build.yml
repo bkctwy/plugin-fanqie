@@ -7,6 +7,7 @@ on:
     pull_request:
         branches:
             - main
+    workflow_dispatch:
 
 env:
     PROJECT_NAME: fanqie
@@ -20,6 +21,11 @@ jobs:
 
             - name: Checkout code
               uses: actions/checkout@v3
+
+            - name: Set up MinGW
+              uses: egor-tensin/setup-mingw@v2
+              with:
+                  platform: x64
 
             - name: Linux Build
               run: |
