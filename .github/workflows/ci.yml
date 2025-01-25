@@ -1,0 +1,24 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    build:
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest]
+        runs-on: ${{ matrix.os }}
+        steps:
+            - id: commit-hash
+              uses: prompt/actions-commit-hash@v3
+            # - uses: actions/checkout@v2
+            - name: Build
+              run: |
+                  echo "Build on ${{ matrix.os }} with commit hash ${{ steps.commit-hash.outputs.short }}"
+                  echo ${{ runner.os }}
