@@ -20,6 +20,10 @@ jobs:
         steps:
             - id: commit-hash
               uses: prompt/actions-commit-hash@v3
+
+            - name: Checkout code
+              uses: actions/checkout@v3
+
             - name: Build
               run: |
                   pwd
