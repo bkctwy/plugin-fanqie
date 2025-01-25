@@ -1,5 +1,8 @@
 name: Artifact
 
+env:
+    PROJECT_NAME: fanqie
+
 on:
     workflow_run:
         workflows: ["Build"]
@@ -8,10 +11,7 @@ on:
 
 jobs:
     artifact:
-        strategy:
-            matrix:
-                os: [ubuntu-latest, windows-latest]
-        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
         steps:
             - id: commit-hash
               uses: prompt/actions-commit-hash@v3
