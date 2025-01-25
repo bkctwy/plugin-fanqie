@@ -1,0 +1,19 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "linux",
+            "displayName": "Linux Build",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "generator": "Unix Makefiles",
+            "toolchainFile": "${sourceDir}/toolchain/toolchain-linux.cmake"
+        },
+        {
+            "name": "windows",
+            "displayName": "Windows Build",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "generator": "Ninja",
+            "toolchainFile": "${sourceDir}/toolchain/toolchain-windows.cmake"
+        }
+    ]
+}
