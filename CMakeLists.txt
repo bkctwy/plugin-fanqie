@@ -62,4 +62,6 @@ target_link_libraries(${plugin_name} PRIVATE SQLiteCpp)
 set_target_properties(${plugin_name} PROPERTIES
     VERSION 1.0
     SOVERSION 1
+    PREFIX ""
+    OUTPUT_NAME ${plugin_name}
 )

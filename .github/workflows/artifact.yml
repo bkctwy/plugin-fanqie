@@ -1,0 +1,29 @@
+name: Artifact
+
+on:
+    workflow_run:
+        workflows: ["Build"]
+        types:
+            - completed
+
+jobs:
+    artifact:
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest]
+        runs-on: ${{ matrix.os }}
+        steps:
+            - id: commit-hash
+              uses: prompt/actions-commit-hash@v3
+            - name: Windows
+              uses: actions/upload-artifact@v2
+              if: ${{runner.os}} == 'Windows'
+              with:
+                  name: ${{ runner.os }}-${{ steps.commit-hash.outputs.short }}
+                  path: build/${{ runner.os }}/$PROJECT_NAME/$PROJECT_NAME.dll
+            - name: Linux
+              uses: actions/upload-artifact@v2
+              if: ${{runner.os}} == 'Linux'
+              with:
+                  name: ${{ runner.os }}-${{ steps.commit-hash.outputs.short }}
+                  path: build/${{ runner.os }}/$PROJECT_NAME/$PROJECT_NAME.so
