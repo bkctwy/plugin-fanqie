@@ -26,8 +26,6 @@ jobs:
 
             - name: Build
               run: |
-                  pwd
-                  ls -l
                   echo "Build on ${{ matrix.os }} with commit hash ${{ steps.commit-hash.outputs.short }}"
-                  echo ${{ runner.os }}
-                  cmake --build --preset=${{ runner.os }}
+                  cmake --preset=${{ runner.os }}
+                  cmake --build ./build/${{ runner.os }} -DCMAKE_BUILD_TYPE=Release
