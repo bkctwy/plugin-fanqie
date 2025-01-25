@@ -22,7 +22,8 @@ jobs:
               uses: prompt/actions-commit-hash@v3
             - name: Build
               run: |
-                  ls
+                  pwd
+                  ls -l
                   echo "Build on ${{ matrix.os }} with commit hash ${{ steps.commit-hash.outputs.short }}"
                   echo ${{ runner.os }}
                   cmake --build --preset=${{ runner.os }}
