@@ -28,4 +28,4 @@ jobs:
               run: |
                   echo "Build on ${{ matrix.os }} with commit hash ${{ steps.commit-hash.outputs.short }}"
                   cmake --preset=${{ runner.os }}
-                  cmake --build ./build/${{ runner.os }}
+                  cmake --build ./build/${{ runner.os }} -j

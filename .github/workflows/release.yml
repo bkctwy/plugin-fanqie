@@ -27,7 +27,7 @@ jobs:
               run: |
                   gh release create "$GITHUB_REF_NAME" \
                   --repo "$GITHUB_REPOSITORY" \
-                  --title "$GITHUB_REF_NAME ($commit_hash)"
+                  --title "$GITHUB_REF_NAME (${{ env.commit_hash }})"
                   --generate-notes \
                   --latest \
 
@@ -41,5 +41,5 @@ jobs:
               run: |
                   gh release upload "$GITHUB_REF_NAME" \
                   --repo "$GITHUB_REPOSITORY" \
-                  ./build/Linux/fanqie.so \
-                  ./build/Windows/fanqie.dll \
+                  ./build/Linux/${{ env.PROJECT_NAME }}.so \
+                  ./build/Windows/${{ env.PROJECT_NAME }}.dll \

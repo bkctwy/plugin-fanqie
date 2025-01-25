@@ -19,9 +19,9 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: Windows-${{ steps.commit-hash.outputs.short }}
-                  path: ./build/Windows/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.dll
+                  path: ./build/Windows/${{ env.PROJECT_NAME }}.dll
             - name: Linux
               uses: actions/upload-artifact@v4
               with:
                   name: Linux-${{ steps.commit-hash.outputs.short }}
-                  path: ./build/Linux/${{env.PROJECT_NAME}}/${{ env.PROJECT_NAME }}.so
+                  path: ./build/Linux/${{ env.PROJECT_NAME }}.so
