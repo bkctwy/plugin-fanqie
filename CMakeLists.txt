@@ -59,6 +59,8 @@ target_link_libraries(${plugin_name} PRIVATE SQLiteCpp)
 # SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O2 -Wall -g -ggdb")
 # SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
+enable_testing(false)
+
 set_target_properties(${plugin_name} PROPERTIES
     PREFIX ""
     OUTPUT_NAME ${plugin_name}
