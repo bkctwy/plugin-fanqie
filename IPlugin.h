@@ -8,14 +8,18 @@
 #include <fmt/format.h>
 #include <future>
 #include <fstream>
+#include <filesystem>
 #include <unordered_map>
 #include <nlohmann/json.hpp>
 #include "utils/db.h"
 #include "utils/task.h"
+#include <thread>
+#include <chrono>
 // #include "utils/progress_bar.h"
 // #include "logger.h"
 
 using namespace std;
+namespace fs = filesystem;
 using json = nlohmann::json;
 
 class IPlugin
@@ -31,17 +35,17 @@ public:
     virtual string getName() const = 0;
     virtual string getSiteId() const = 0;
     virtual string getPluginId() const = 0;
-    virtual void init() = 0;
+    virtual void init(string id) = 0;
 
     virtual vector<unordered_map<string, string>> getIndex() = 0;
     virtual string getTitle() = 0;
     virtual string getAuthor() = 0;
     virtual void getCover() = 0;
 
-    void setId(string id)
-    {
-        this->id = id;
-    }
+    // void setId(string id)
+    // {
+    //     this->id = id;
+    // }
 
     virtual void unload() {};
 
@@ -49,10 +53,14 @@ public:
     {
         getIndex();
 
+        fs::path save_path = fmt::format("{}/{}", this->novels_folder, this->title);
+        fs::create_directories(save_path);
+
         TaskManager manager(stoi(this->max_workers));
         auto callback = [this](const unordered_map<string, string> &chapter_data)
         {
             parseChapter(chapter_data);
+            this_thread::sleep_for(chrono::milliseconds(stoi(this->sleep_time)));
         };
         for (int i = 0; i < index_data.size(); i++)
         {
@@ -120,6 +128,7 @@ protected:
 
     unordered_map<string, string> fetchOneChapter(int index)
     {
+        fmt::print("Fetching chapter... ({}/{})\n", index + 1, this->index_data.size());
         cpr::Response response = cpr::Get(cpr::Url{this->index_data[index]["fetch_url"]});
         string content = response.text;
         unordered_map<string, string> chapter_data;
@@ -141,6 +150,16 @@ protected:
         // this->db_path = data["db_path"].get<string>();
         this->sleep_time = data["sleep_time"].get<string>();
         this->max_workers = data["max_workers"].get<string>();
+
+        fs::path data_path = this->data_folder;
+        fs::path novels_path = this->novels_folder;
+        fs::path covers_path = this->covers_folder;
+        fs::path logs_path = this->logs_folder;
+
+        fs::create_directories(data_path);
+        fs::create_directories(novels_path);
+        fs::create_directories(covers_path);
+        fs::create_directories(logs_path);
     }
 };
 

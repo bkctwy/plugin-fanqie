@@ -95,6 +95,7 @@
         "source_location": "cpp",
         "__node_handle": "cpp",
         "forward_list": "cpp",
-        "__tree": "cpp"
+        "__tree": "cpp",
+        "filesystem": "cpp"
     }
 }

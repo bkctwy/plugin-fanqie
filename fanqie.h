@@ -34,8 +34,9 @@ public:
         return this->plugin_id;
     }
 
-    void init() override
+    void init(string id) override
     {
+        this->id = id;
         this->detail_api_url = fmt::format("https://fanqienovel.com/reading/bookapi/multi-detail/v/?aid=1967&iid=1&version_code=999&book_id={}", id);
     }
 
