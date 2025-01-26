@@ -22,6 +22,11 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v3
 
+            - name: Setup Ninja
+              uses: ashutoshvarma/setup-ninja@master
+              with:
+                  version: 1.10.0
+
             - name: Set up MinGW
               uses: egor-tensin/setup-mingw@v2
               with:
@@ -41,7 +46,6 @@ jobs:
 
     artifact:
         needs: build
-
         runs-on: ubuntu-latest
         steps:
             - id: commit-hash
