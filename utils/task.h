@@ -12,14 +12,18 @@
 #include <functional>
 #include <unordered_map>
 #include <utility> // for std::forward
+#include <chrono>
 
 class TaskManager
 {
 public:
     using Callback = std::function<void(std::unordered_map<std::string, std::string>)>; // 回调函数类型
 
-    TaskManager(int max_concurrent_tasks)
-        : max_concurrent_tasks_(max_concurrent_tasks), running_tasks_(0) {}
+    TaskManager(int max_concurrent_tasks, int sleep_time)
+        : max_concurrent_tasks_(max_concurrent_tasks), running_tasks_(0)
+    {
+        this->sleep_time = sleep_time;
+    }
 
     // 添加任务，支持自定义函数、参数和回调函数
     template <typename Func, typename... Args>
@@ -54,12 +58,14 @@ public:
                 fmt::print("Unknown exception caught in task\n");
             }
 
+            std::this_thread::sleep_for(std::chrono::seconds(this->sleep_time)); // 休眠
             std::unique_lock<std::mutex> lock(mutex_);
             --running_tasks_;
             cv_.notify_one(); // 通知可以添加新任务
         };
 
         tasks_.push(std::async(std::launch::async, std::move(task)));
+        ++running_tasks_;
     }
 
     void wait_all()
@@ -72,6 +78,8 @@ public:
     }
 
 private:
+    int sleep_time;
+
     int max_concurrent_tasks_;
     std::atomic<int> running_tasks_;
     std::queue<std::future<void>> tasks_;

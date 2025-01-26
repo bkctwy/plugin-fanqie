@@ -56,11 +56,10 @@ public:
         fs::path save_path = fmt::format("{}/{}", this->novels_folder, this->title);
         fs::create_directories(save_path);
 
-        TaskManager manager(stoi(this->max_workers));
+        TaskManager manager(stoi(this->max_workers), stoi(this->sleep_time));
         auto callback = [this](const unordered_map<string, string> &chapter_data)
         {
             parseChapter(chapter_data);
-            this_thread::sleep_for(chrono::milliseconds(stoi(this->sleep_time)));
         };
         for (int i = 0; i < index_data.size(); i++)
         {
