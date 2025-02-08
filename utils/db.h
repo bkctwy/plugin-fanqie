@@ -57,14 +57,26 @@ public:
 
     bool createTable(const string &table_name)
     {
-        string sql = fmt::format("CREATE TABLE IF NOT EXISTS {} (id STRING PRIMARY KEY,title STRING,url STRING,md5_id STRING,fetch_url STRING) ", table_name);
+        string sql = fmt::format("CREATE TABLE IF NOT EXISTS {} (id STRING PRIMARY KEY, title STRING, url STRING, md5_id STRING,fetch_url STRING, update_time STRING) ", table_name);
         return execute(sql);
     }
 
     bool insertData(const string &table_name, unordered_map<string, string> data)
     {
-        string sql = fmt::format("INSERT INTO {} (id,title,url,md5_id,fetch_url) VALUES ('{}','{}','{}','{}','{}')", table_name, data["id"], data["title"], data["url"], data["md5_id"], data["fetch_url"]);
+        string sql = fmt::format("INSERT INTO {} (id, title, url, md5_id, fetch_url, update_time) SELECT '{}', '{}', '{}', '{}', '{}', '{}' WHERE NOT EXISTS (SELECT 1 FROM {} WHERE id='{}')",
+                                 table_name, data["id"], data["title"], data["url"], data["md5_id"], data["fetch_url"], data["update_time"], table_name, data["id"]);
         return execute(sql);
+    }
+
+    string getLastUpdateTime(const string &table_name)
+    {
+        string sql = fmt::format("SELECT * FROM {} ORDER BY update_time DESC LIMIT 1", table_name);
+        SQLite::Statement query(m_db, sql);
+        if (query.executeStep())
+        {
+            return query.getColumn(5).getString();
+        }
+        return "";
     }
 
     vector<unordered_map<string, string>> readData(const string &table_name)

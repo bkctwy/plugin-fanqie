@@ -34,9 +34,10 @@ public:
         return this->plugin_id;
     }
 
-    void init(string id) override
+    void init(string id, bool force_update) override
     {
         this->id = id;
+        getCatalog(force_update);
     }
 
     string getAuthor() override
@@ -79,19 +80,22 @@ protected:
     string chapter_api_url = "https://novel.snssdk.com/api/novel/reader/full/v1/?item_id=";
 
     vector<unordered_map<string, string>>
-    getCatalog() override
+    getCatalog(bool force_update = false) override
     {
         if (this->title.empty())
         {
             getTitle();
         }
-        if (db.isTableEmpty(this->title) == true)
+        if (db.isTableEmpty(this->title) == true || force_update == true)
         {
             db.createTable(this->title);
+            cpr::Response detail_response = cpr::Get(cpr::Url{this->detail_api_url + this->id});
+            json detail_json = json::parse(detail_response.text);
+            string update_time = detail_json["data"][0]["last_chapter_update_time"].get<string>();
+
             cpr::Response response = cpr::Get(cpr::Url{this->catalog_api_url + this->id});
-            json jsonResponse = json::parse(response.text);
-            // fmt::print("{}\n", jsonResponse.dump(4));
-            for (const auto &volumes : jsonResponse["data"]["chapterListWithVolume"])
+            json json_response = json::parse(response.text);
+            for (const auto &volumes : json_response["data"]["chapterListWithVolume"])
             {
                 for (const auto &chapter : volumes)
                 {
@@ -101,7 +105,7 @@ protected:
                     string id = chapter["itemId"].get<string>();
                     string md5_id = utils::stringToMD5(id);
                     string fetch_url = (this->chapter_api_url + id);
-                    unordered_map<string, string> catalog = utils::initCatalogMap(title, url, id, md5_id, fetch_url);
+                    unordered_map<string, string> catalog = utils::initCatalogMap(title, url, id, md5_id, fetch_url, update_time);
                     db.insertData(this->title, catalog);
                     this->catalog_data.push_back(catalog);
                 }
@@ -109,7 +113,24 @@ protected:
         }
         else
         {
-            this->catalog_data = db.readData(this->title);
+
+            fmt::print("Checking novel update...\n");
+
+            cpr::Response detail_response = cpr::Get(cpr::Url{this->detail_api_url + this->id});
+            json detail_json = json::parse(detail_response.text);
+            int remote_update_time = stoi(detail_json["data"][0]["last_chapter_update_time"].get<string>());
+
+            int local_update_time = stoi(db.getLastUpdateTime(this->title));
+
+            if (remote_update_time > local_update_time)
+            {
+                fmt::print("New chapters found, updating catalog...\n");
+                getCatalog(true);
+            }
+            else
+            {
+                this->catalog_data = db.readData(this->title);
+            }
         }
         return this->catalog_data;
     }

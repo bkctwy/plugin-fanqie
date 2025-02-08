@@ -29,7 +29,7 @@ namespace utils
         return output;
     }
 
-    unordered_map<string, string> initCatalogMap(string title, string url, string id, string md5_id, string fetch_url)
+    unordered_map<string, string> initCatalogMap(string title, string url, string id, string md5_id, string fetch_url, string update_time)
     {
         unordered_map<string, string> content_map;
         content_map["fetch_url"] = fetch_url;
@@ -37,6 +37,7 @@ namespace utils
         content_map["id"] = id;
         content_map["url"] = url;
         content_map["title"] = title;
+        content_map["update_time"] = update_time;
         return content_map;
     }
 

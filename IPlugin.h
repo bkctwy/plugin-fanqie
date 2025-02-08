@@ -35,9 +35,9 @@ public:
     virtual string getName() const = 0;
     virtual string getSiteId() const = 0;
     virtual string getPluginId() const = 0;
-    virtual void init(string id) = 0;
+    virtual void init(string id, bool force_update) = 0;
 
-    virtual vector<unordered_map<string, string>> getCatalog() = 0;
+    virtual vector<unordered_map<string, string>> getCatalog(bool force_update = false) = 0;
     virtual string getTitle() = 0;
     virtual string getAuthor() = 0;
     virtual void getCover() = 0;
@@ -51,7 +51,7 @@ public:
 
     void fetchAllChapter()
     {
-        getCatalog();
+        // getCatalog(false);
 
         fs::path save_path = fmt::format("{}/{}", this->novels_folder, this->title);
         fs::create_directories(save_path);
@@ -65,6 +65,7 @@ public:
         {
             if (isDownloaded(catalog_data[i]["title"]))
             {
+                // fmt::print("Skipping chapter {} ({}/{})\n", catalog_data[i]["title"], i + 1, catalog_data.size());
                 continue;
             }
             manager.add_task([this, i]()
@@ -115,6 +116,7 @@ protected:
 
     void saveCover(string url)
     {
+        fmt::print("Saving cover...\n");
         cpr::Response response = cpr::Get(cpr::Url{url});
         string content = response.text;
         string file_path = this->covers_folder + "/" + this->title + ".png";
@@ -137,7 +139,7 @@ protected:
 
     unordered_map<string, string> fetchOneChapter(int index)
     {
-        fmt::print("Fetching chapter... ({}/{})\n", index + 1, this->catalog_data.size());
+        fmt::print("Downloading chapter... ({}/{})\n", index + 1, this->catalog_data.size());
         cpr::Response response = cpr::Get(cpr::Url{this->catalog_data[index]["fetch_url"]});
         string content = response.text;
         unordered_map<string, string> chapter_data;
