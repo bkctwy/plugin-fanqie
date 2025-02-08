@@ -37,7 +37,7 @@ public:
     virtual string getPluginId() const = 0;
     virtual void init(string id) = 0;
 
-    virtual vector<unordered_map<string, string>> getIndex() = 0;
+    virtual vector<unordered_map<string, string>> getCatalog() = 0;
     virtual string getTitle() = 0;
     virtual string getAuthor() = 0;
     virtual void getCover() = 0;
@@ -51,7 +51,7 @@ public:
 
     void fetchAllChapter()
     {
-        getIndex();
+        getCatalog();
 
         fs::path save_path = fmt::format("{}/{}", this->novels_folder, this->title);
         fs::create_directories(save_path);
@@ -61,9 +61,9 @@ public:
         {
             parseChapter(chapter_data);
         };
-        for (int i = 0; i < index_data.size(); i++)
+        for (int i = 0; i < catalog_data.size(); i++)
         {
-            if (isDownloaded(index_data[i]["title"]))
+            if (isDownloaded(catalog_data[i]["title"]))
             {
                 continue;
             }
@@ -83,9 +83,9 @@ protected:
     string site_id;
     string site_url;
     string author;
-    string index_page_text;
-    string index_page_url;
-    vector<unordered_map<string, string>> index_data;
+    string catalog_page_text;
+    string catalog_page_url;
+    vector<unordered_map<string, string>> catalog_data;
 
     // config.json
     string data_folder;
@@ -108,32 +108,42 @@ protected:
 
     void saveChapter(string title, string content)
     {
-        string file_name = this->novels_folder + "/" + this->title + "/" + title + ".txt";
-        auto out = fmt::output_file(file_name);
+        string file_path = this->novels_folder + "/" + this->title + "/" + title + ".txt";
+        auto out = fmt::output_file(file_path);
         out.print(content);
     }
 
-    virtual string getIndexPage()
+    void saveCover(string url)
     {
-        if (this->index_page_text.empty())
+        cpr::Response response = cpr::Get(cpr::Url{url});
+        string content = response.text;
+        string file_path = this->covers_folder + "/" + this->title + ".png";
+        ofstream out(file_path, ofstream::binary);
+        out.write(content.c_str(), content.size());
+        out.close();
+    }
+
+    virtual string getCatalogPage()
+    {
+        if (this->catalog_page_text.empty())
         {
-            cpr::Response response = cpr::Get(cpr::Url{this->index_page_url});
-            this->index_page_text = response.text;
+            cpr::Response response = cpr::Get(cpr::Url{this->catalog_page_url});
+            this->catalog_page_text = response.text;
         }
-        return this->index_page_text;
+        return this->catalog_page_text;
     };
 
     virtual void parseChapter(unordered_map<string, string> chapter_data) = 0;
 
     unordered_map<string, string> fetchOneChapter(int index)
     {
-        fmt::print("Fetching chapter... ({}/{})\n", index + 1, this->index_data.size());
-        cpr::Response response = cpr::Get(cpr::Url{this->index_data[index]["fetch_url"]});
+        fmt::print("Fetching chapter... ({}/{})\n", index + 1, this->catalog_data.size());
+        cpr::Response response = cpr::Get(cpr::Url{this->catalog_data[index]["fetch_url"]});
         string content = response.text;
         unordered_map<string, string> chapter_data;
         chapter_data["status"] = "success";
         chapter_data["index"] = to_string(index);
-        chapter_data["title"] = this->index_data[index]["title"];
+        chapter_data["title"] = this->catalog_data[index]["title"];
         chapter_data["content"] = content;
         return chapter_data;
     }

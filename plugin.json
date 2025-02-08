@@ -1,0 +1,10 @@
+{
+    "name": "fanqie",
+    "version": "0.1.0",
+    "description": "A C++ plugin for Fanqie",
+    "author": "bkctwy",
+    "url": {
+        "Linux": "https://github.com/bkctwy/plugin-fanqie/releases/download/v1.6/fanqie.so",
+        "Windows": "https://github.com/bkctwy/plugin-fanqie/releases/download/v1.6/fanqie.dll"
+    }
+}

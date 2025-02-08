@@ -29,15 +29,15 @@ namespace utils
         return output;
     }
 
-    unordered_map<string, string> initIndexMap(string title, string url, string id, string md5_id, string fetch_url)
+    unordered_map<string, string> initCatalogMap(string title, string url, string id, string md5_id, string fetch_url)
     {
-        unordered_map<string, string> index_map;
-        index_map["fetch_url"] = fetch_url;
-        index_map["md5_id"] = md5_id;
-        index_map["id"] = id;
-        index_map["url"] = url;
-        index_map["title"] = title;
-        return index_map;
+        unordered_map<string, string> content_map;
+        content_map["fetch_url"] = fetch_url;
+        content_map["md5_id"] = md5_id;
+        content_map["id"] = id;
+        content_map["url"] = url;
+        content_map["title"] = title;
+        return content_map;
     }
 
 } // namespace utils

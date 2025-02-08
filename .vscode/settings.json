@@ -96,6 +96,12 @@
         "__node_handle": "cpp",
         "forward_list": "cpp",
         "__tree": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "codecvt": "cpp",
+        "iomanip": "cpp",
+        "numeric": "cpp",
+        "semaphore": "cpp",
+        "shared_mutex": "cpp",
+        "stdfloat": "cpp"
     }
 }
